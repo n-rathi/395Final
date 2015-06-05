@@ -53,7 +53,7 @@ stock_phrase(greet($speaker, Who)) -->
    proper_name(Who, singular).
 stock_phrase(greet($speaker, $addressee)) --> ['Hi', there].
 
-:- register_lexical_items(['Hey', 'Hello', 'Hi']).
+:- register_lexical_items(['Hey', 'Hellow', 'Hi']).
 
 stock_phrase(apology($speaker, $addressee)) --> ['Sorry'].
 stock_phrase(excuse_self($speaker, $addressee)) --> ['Excuse', me].
@@ -113,17 +113,6 @@ stock_phrase(color_query(player, $me, white)) -->
    [what, does, white, text, mean, '?'].
 stock_phrase(color_query(player, $me, white)) -->
    [why, does, my, text, turn, white, '?'].
-
-
-%%
-%% Custom input phrases
-%%
-
-
-stock_phrase(color_query(player,$me, white)) -->
-   [can, 'I', have, a, Drink],
-   {member(Drink, [vodka,rum])},
-   ['?'].
 
 %
 % Increments produced by the discourse generator

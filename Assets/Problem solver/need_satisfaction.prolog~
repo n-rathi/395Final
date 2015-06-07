@@ -1,71 +1,10 @@
 character_initialization :-
    start_task(setup_satisfy_needs, 100).
 
+strategy(satisfy_needs,
+	 begin(satisfy_a_need,
+	       satisfy_needs)).
+
 strategy(setup_satisfy_needs,
 	 begin(call(initialize_last_satisfied_times),
 	       satisfy_needs)).
-
-%%% Making a loop
-strategy(satisfy_needs,
-	 begin(
-	       satisfy_a_need,
-	       satisfy_needs
-	)).
-
-%%% Satisfying a need
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("getting food")),
-	       goto($refrigerator),
-	       say_string("mmmmmmmm"),
-	       call(increase_satisfaction(hunger,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("taking a nap")),
-	       goto($bed),
-	       say_string("zzzzzzzz"),
-	       call(increase_satisfaction(sleep,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("relieving myself")),
-	       goto($toilet),
-	       say_string("ahhhh"),
-	       call(increase_satisfaction(bladder,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("getting a drink")),
-	       goto($toilet),
-	       say_string("sllurrrrpp"),
-	       call(increase_satisfaction(thirst,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("being social")),
-	       character(Character), Character \= $me,
-	       goto(Character),
-	       say_string("hey there, good talk"),
-	       call(increase_satisfaction(social,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("need some fun")),
-	       goto($radio),
-	       say_string("why do we still have a radio in 2015"),
-	       call(increase_satisfaction(fun,40))
-	      )).
-
-strategy(satisfy_a_need,
-	 begin(
-	       call(log("getting clean")),
-	       goto($'bathroom sink'),
-	       say_string("wish i had a shower"),
-	       call(increase_satisfaction(hygiene,40))
-	      )).

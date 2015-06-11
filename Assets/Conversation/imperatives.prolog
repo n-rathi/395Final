@@ -2,9 +2,16 @@
 %% Responding to imperatives
 %%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RECEIVING DRINK ORDER COMMAND
 strategy(respond_to_dialog_act(command(Requestor, $me, Task)),
 	 follow_command(Requestor, Task, RequestStatus)) :-
    request_status(Requestor, Task, RequestStatus).
+
+request_status(_Requestor, order_drink(Drink), drink_order) :-
+	member(Drink, [margarita]),
+	!.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 request_status(_Requestor, Task, immoral) :-
    @immoral(Task),
@@ -30,6 +37,24 @@ strategy(follow_command(Requestor, Task, normal),
 
 :- public dialog_task/1.
 dialog_task(tell_about(_,_,_)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% FOLLOWING DRINK ORDER COMMAND
+
+strategy(follow_command(_, _, drink_order),
+	 make_drink(margarita)).
+
+strategy(make_drink(_),
+	begin(
+	say_string("Ok."),
+	say_string("Coming right up."),
+	goto($refrigerator),
+	say_string("getting the ingredients..."),
+	goto($pc),
+	say_string("enjoy!")
+	)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 strategy(follow_command(_, _, immoral),
 	 say_string("That would be immoral.")).

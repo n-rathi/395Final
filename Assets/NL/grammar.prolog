@@ -119,11 +119,10 @@ stock_phrase(color_query(player, $me, white)) -->
 %% Custom input phrases
 %%
 
-
-stock_phrase(color_query(player,$me, white)) -->
-   [can, 'I', have, a, Drink],
-   {member(Drink, [vodka,rum])},
-   ['?'].
+stock_phrase(command($speaker, $addressee, order_drink(Drink))) -->
+   [make, me, a, Drink],
+   {member(Drink, [margarita, julep])},
+   [please].
 
 %
 % Increments produced by the discourse generator

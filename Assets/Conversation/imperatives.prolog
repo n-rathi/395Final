@@ -9,8 +9,17 @@ strategy(respond_to_dialog_act(command(Requestor, $me, Task)),
    request_status(Requestor, Task, RequestStatus).
 
 request_status(_Requestor, order_drink(Drink), drink_order) :-
-	member(Drink, [margarita, julep]),
+	drink(Drink,_,_),
 	!.
+
+request_status(_Requestor, query_ingredients(Drink), ingredient_query) :-
+	drink(Drink,_,_),
+	!.
+
+request_status(_Requestor, query_cost(Drink), cost_query) :-
+	drink(Drink,_,_),
+	!.	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 request_status(_Requestor, Task, immoral) :-
@@ -37,25 +46,6 @@ strategy(follow_command(Requestor, Task, normal),
 
 :- public dialog_task/1.
 dialog_task(tell_about(_,_,_)).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% FOLLOWING DRINK ORDER COMMAND
-
-trace_task($kavi, _).
-
-strategy(follow_command(_, _, drink_order),
-	 make_drink(margarita)).
-
-strategy(make_drink(_),
-	begin(
-	say_string("Coming right up."),
-	goto($refrigerator),
-	say_string("getting the ingredients..."),
-	sleep(1),
-	goto($'kitchen table'),
-	say_string("enjoy!")
-	)).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 strategy(follow_command(_, _, immoral),
@@ -101,3 +91,47 @@ strategy(add_conversation_topic(Person, Topic),
    var(Topic) -> Topic = Person ; true.
 
 strategy(end_game(_,_), end_game(null)).
+
+
+
+%%% %%% %%% %%% %%% %%% %%% %%% %%% %%% %%% 
+%%% Our commands
+
+%%%trace_task($kavi, say_string(_)).
+
+%%% Telling how much a drink costs
+strategy(follow_command(_, query_cost(Drink), cost_query),
+	 tell_cost(Drink)).
+
+strategy(tell_cost(Drink),
+	say_string(String)
+	) :-
+	(drink(Drink, Cost, _),
+	word_list(String, [a, Drink, costs, Cost, dollars])).
+
+%%% Listing a drink's ingredients
+strategy(follow_command(_, query_ingredients(Drink), ingredient_query),
+	 list_ingredients(Drink)).
+
+strategy(list_ingredients(Drink),
+	say_string(String)
+	) :- 
+	drink(Drink, _, Ingredients),
+	append([the, Drink, contains, ':'], Ingredients, List),
+	word_list(String, List).
+
+%%% Fulfilling drink order
+strategy(follow_command(_, order_drink(Drink), drink_order),
+	 make_drink(Drink)).
+
+strategy(make_drink(Drink),
+	begin(
+	say_string("Coming right up."),
+	goto($refrigerator),
+	say_string("getting the ingredients..."),
+	sleep(1),
+	goto($'kitchen table'),
+	say_string(String)
+	)) :-
+	word_list(String, [enjoy, your, Drink]).
+

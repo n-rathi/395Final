@@ -11,6 +11,10 @@ strategy(respond_to_dialog_act(command(Requestor, $me, Task)),
 request_status(_Requestor, order_drink(Drink), drink_order) :-
 	member(Drink, [margarita, julep]),
 	!.
+
+request_status(_Requestor, cost_drink(Drink, Cost), drink_cost) :-
+	member(Drink, [margarita, julep]),
+	!.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 request_status(_Requestor, Task, immoral) :-
@@ -46,15 +50,20 @@ trace_task($kavi, _).
 strategy(follow_command(_, _, drink_order),
 	 make_drink(margarita)).
 
+default_strategy(follow_command(_, _, drink_cost),
+	 say_string("Seven dollars.")).
+
 strategy(make_drink(_),
 	begin(
+	say_string("Ok."),
 	say_string("Coming right up."),
 	goto($refrigerator),
 	say_string("getting the ingredients..."),
-	sleep(1),
-	goto($'kitchen table'),
+	goto($pc),
 	say_string("enjoy!")
 	)).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

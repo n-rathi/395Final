@@ -122,6 +122,13 @@ stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
 
 :- register_lexical_items([make, margarita, julep, please]).
 
+stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
+   [how, much, is, a, Drink],
+   {member(Drink, [margarita, julep])}.
+
+:- register_lexical_items([how, much, margarita, julep, is]).
+
+
 %
 % Increments produced by the discourse generator
 %

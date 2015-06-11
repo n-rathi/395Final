@@ -122,7 +122,7 @@ stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
 
 :- register_lexical_items([make, margarita, julep, please]).
 
-stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
+stock_phrase(command($speaker, $kavi, cost_drink(Drink, Cost))) -->
    [how, much, is, a, Drink],
    {member(Drink, [margarita, julep])}.
 

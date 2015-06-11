@@ -48,11 +48,11 @@ strategy(follow_command(_, _, drink_order),
 
 strategy(make_drink(_),
 	begin(
-	say_string("Ok."),
 	say_string("Coming right up."),
 	goto($refrigerator),
 	say_string("getting the ingredients..."),
-	goto($pc),
+	sleep(1),
+	goto($'kitchen table'),
 	say_string("enjoy!")
 	)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

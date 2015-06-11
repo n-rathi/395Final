@@ -47,10 +47,6 @@ stock_phrase(prompt_player($me, $me)) --> [type, something].
 
 :-register_lexical_items([huh, type, something]).
 
-stock_phrase(greet($speaker, Who)) -->
-   [Salutation, ','],
-   { member(Salutation, ['Hey', 'Hello', 'Hi']) },
-   proper_name(Who, singular).
 stock_phrase(greet($speaker, $addressee)) --> ['Hi', there].
 
 :- register_lexical_items(['Hey', 'Hello', 'Hi']).
@@ -119,11 +115,12 @@ stock_phrase(color_query(player, $me, white)) -->
 %% Custom input phrases
 %%
 
-stock_phrase(command($speaker, $addressee, order_drink(Drink))) -->
+stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
    [make, me, a, Drink],
    {member(Drink, [margarita, julep])},
    [please].
 
+:- register_lexical_items([make, margarita, julep, please]).
 
 %
 % Increments produced by the discourse generator

@@ -8,5 +8,3 @@
 % get into pointless conversations.
 %standard_concern(be_polite, 1).
 
-score_action(greet(_, _), be_polite, _, 50).
-

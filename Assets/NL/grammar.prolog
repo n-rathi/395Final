@@ -1,191 +1,112 @@
-% To do:
-% Vocative: "TOM, ..."
-
-:- indexical anaphore_context=[ ].
-
-:- randomizable utterance//1, stock_phrase//1.
-
-utterance(DialogAct) --> stock_phrase(DialogAct).
-utterance(question(Speaker, Addressee, LF, T, A)) -->
-   sentence(LF, interrogative, affirmative, T, A),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(assertion(Speaker, Addressee, LF, T, A)) -->
-   sentence(LF, indicative, affirmative, T, A),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(question_answer(Speaker, Addressee, LF, T, A)) -->
-   sentence(LF, indicative, affirmative, T, A),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(assertion(Speaker, Addressee, not(LF), T, A)) -->
-   sentence(LF, indicative, negative, T, A),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(command(Speaker, Addressee, LF)) -->
-   sentence(LF, imperative, affirmative, _, _),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(injunction(Speaker, Addressee, LF)) -->
-   sentence(LF, imperative, negative, _, _),
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(agree(Speaker, Addressee, _LF)) -->
-   [ yes ],
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(disagree(Speaker, Addressee, _LF)) -->
-   [ no ],
-   { current_dialog_pair(Speaker, Addressee) }.
-utterance(hypno_command(Speaker, Addressee, LF, T, A)) -->
-   [ fnord ],
-   s(LF, indicative, affirmative, T, A),
-   { current_dialog_pair(Speaker, Addressee) }.
-
-
-current_dialog_pair($speaker, $addressee).
-
-%
-% Stock phrases
-%
-
-stock_phrase(do_not_understand($speaker, $addressee, _)) --> [ huh, '?'].
-stock_phrase(prompt_player($me, $me)) --> [type, something].
-
-:-register_lexical_items([huh, type, something]).
-
-stock_phrase(greet($speaker, $addressee)) --> ['Hi', there].
-
-:- register_lexical_items(['Hey', 'Hello', 'Hi']).
-
-stock_phrase(apology($speaker, $addressee)) --> ['Sorry'].
-stock_phrase(excuse_self($speaker, $addressee)) --> ['Excuse', me].
-
-:- register_lexical_items(['Sorry', 'Excuse']).
-
-stock_phrase(parting($speaker, $addressee)) --> [X], { member(X, [bye, byebye, goodbye]) }.
-stock_phrase(parting($speaker, $addressee)) --> [see, you].
-stock_phrase(parting($speaker, $addressee)) --> [be, seeing, you].
-
-stock_phrase(command($speaker, $addressee, end_game($addressee, $addressee))) --> [ end, game ].
-
-:- register_lexical_items([end, game]).
-
-%
-% Help queries from the player
-%
-
-stock_phrase(general_help(player, $me)) -->
-   [help].
-
-:- register_lexical_item(help).
-
-stock_phrase(general_help(player, $me)) -->
-   [what, do, 'I', do, '?'].
-stock_phrase(how_do_i(player, $me, Q)) -->
-   [how, do, Us],
-   { member(Us, ['I', you, we]) },
-   player_question(Q),
-   ['?'].
-
-stock_phrase(objective_query(player, $me)) -->
-   [what, am, 'I', trying, to, do, '?'].
-stock_phrase(objective_query(player, $me)) -->
-   [what, are, Us],
-   { member(Us, [we, you]) },
-   [trying, to, do, '?'].
-
-stock_phrase(color_query(player, $me, red)) -->
-   [what, does, red, text, mean, '?'].
-stock_phrase(color_query(player, $me, red)) -->
-   [why, does, my, text, turn, red, '?'].
-
-:- register_lexical_items([red, green, yellow, white, turn, mean]).
-
-stock_phrase(color_query(player, $me, yellow)) -->
-   [what, does, yellow, text, mean, '?'].
-stock_phrase(color_query(player, $me, yellow)) -->
-   [why, does, my, text, turn, yellow, '?'].
-
-stock_phrase(color_query(player, $me, green)) -->
-   [what, does, green, text, mean, '?'].
-stock_phrase(color_query(player, $me, green)) -->
-   [why, does, my, text, turn, green, '?'].
-
-stock_phrase(color_query(player, $me, white)) -->
-   [what, does, white, text, mean, '?'].
-stock_phrase(color_query(player, $me, white)) -->
-   [why, does, my, text, turn, white, '?'].
-
-
 %%
-%% Custom input phrases
+%% Responding to imperatives
 %%
 
-stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
-   [make, me, a, Drink],
-   {member(Drink, [margarita, julep])},
-   [please].
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RECEIVING DRINK ORDER COMMAND
+strategy(respond_to_dialog_act(command(Requestor, $me, Task)),
+	 follow_command(Requestor, Task, RequestStatus)) :-
+   request_status(Requestor, Task, RequestStatus).
 
-:- register_lexical_items([make, margarita, julep, please]).
+request_status(_Requestor, order_drink(Drink), drink_order) :-
+	member(Drink, [margarita, julep]),
+	!.
 
-%
-% Increments produced by the discourse generator
-%
+request_status(_Requestor, cost_drink(Drink, Cost), drink_cost) :-
+	member(Drink, [margarita, julep]),
+	!.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-utterance(discourse_increment(Speaker, Addressee, Fragments)) -->
-   { generating_nl,               % Only valid for character output, not player input.
-     bind(speaker, Speaker),
-     bind(addressee, Addressee) },
-   discourse_fragments(Fragments).
+request_status(_Requestor, Task, immoral) :-
+   @immoral(Task),
+   !.
+request_status(_Requestor, Task, non_normative) :-
+   \+ well_typed(Task, action, _),
+   !.
+request_status(_Requestor, Task, unachievable(Reason)) :-
+   \+ have_strategy(Task),
+   once(diagnose(Task, Reason)),
+   !.
+request_status(Requestor, Task, incriminating(P)) :-
+   guard_condition(Task, P),
+   pretend_truth_value(Requestor, P, Value),
+   Value \= true,
+   !.
+request_status(_Requestor, _Task, normal).
 
-discourse_fragments([]) -->
-   [ ].
-discourse_fragments([F | Fs]) -->
-   discourse_fragment(F),
-   discourse_fragments(Fs).
+strategy(follow_command(Requestor, Task, normal),
+	 if(dialog_task(Task),
+	    Task,
+	    call(add_pending_task(on_behalf_of(Requestor, Task))))).
 
-discourse_fragment(question_answer(X)) -->
-   {!}, sentence(X, indicative, affirmative, present, simple).
-discourse_fragment(s(X)) -->
-   {!}, sentence(X, indicative, affirmative, present, simple).
+:- public dialog_task/1.
+dialog_task(tell_about(_,_,_)).
 
-discourse_fragment(np(X)) -->
-   {kind(X), !}, [a, X].
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% FOLLOWING DRINK ORDER COMMAND
 
-discourse_fragment(np(X)) -->
-   {!}, np((X^S)^S, subject, third:singular, nogap, nogap).
+trace_task($kavi, _).
 
-discourse_fragment(X) -->
-   { string(X), ! },
-   [ X ].
+strategy(follow_command(_, _, drink_order),
+	 make_drink(margarita)).
 
-%
-% Interface to action and conversation systems
-% This adds rules at load time for the different utterances
-% They declare utterances to be actions (i.e. atomically executable)
-% and to be events that conversations should respond to.
-%
+default_strategy(follow_command(_, _, drink_cost),
+	 say_string("Seven dollars.")).
 
-:- public register_utterance_types/0.
+strategy(make_drink(_),
+	begin(
+	say_string("Ok."),
+	say_string("Coming right up."),
+	goto($refrigerator),
+	say_string("getting the ingredients..."),
+	goto($pc),
+	say_string("enjoy!")
+	)).
 
-register_utterance_types :-
-   forall(( clause(utterance(A, _, _), _),
-	    nonvar(A) ),
-	  assert_action_functor(A)),
-   forall(clause(stock_phrase(A, _, _), _),
-	  assert_action_functor(A)).
 
-assert_action_functor(Structure) :-
-   functor(Structure, Functor, Arity),
-   ( action_functor(Functor, Arity) -> true
-     ;
-     ( assert(action_functor(Functor, Arity)),
-       assert(precondition(Structure, /perception/nobody_speaking)),
-       add_conversation_dispatch_clause(Structure) ) ).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-add_conversation_dispatch_clause(Structure) :-
-   functor(Structure, Functor, Arity),
-   indexical_named(me, Me),
-   EventArgs = [Partner, Me | _],
-   length(EventArgs, Arity),
-   Event =.. [Functor | EventArgs],
-   assert( ( on_event(Event, conversation, C,
-		      conversation_handler_task(C, respond_to_dialog_act(Event))) :-
-	        C/partner/Partner
-	   ) ).
 
-:- register_utterance_types.
+strategy(follow_command(_, _, immoral),
+	 say_string("That would be immoral.")).
+strategy(follow_command(_, _, non_normative),
+	 say_string("That would be weird.")).
+strategy(follow_command(_, _, unachievable(Reason)),
+	 explain_failure(Reason)).
+strategy(follow_command(_, _, incriminating(_)),
+	 say_string("Sorry, I can't.")).
+
+diagnose(Task, ~Precondition) :-
+   unsatisfied_task_precondition(Task, Precondition).
+
+default_strategy(explain_failure(_),
+		 say_string("I don't know how.")).
+strategy(explain_failure(~know(X:location(Object, X))),
+	 speech(["I don't know where", np(Object), "is"])).
+
+strategy(tell_about($me, _, Topic),
+	 describe(Topic, general, null)).
+
+normalize_task(go($me, Location),
+	       goto(Location)).
+normalize_task(take($me, Patient, _),
+	       pickup(Patient)).
+normalize_task(put($me, Patient, Destination),
+	      move($me, Patient, Destination)) :-
+   nonvar(Destination).
+
+strategy(talk($me, $addressee, Topic),
+	 describe(Topic, introduction, null)) :-
+   nonvar(Topic).
+
+strategy(talk($me, ConversationalPartner, Topic),
+	 add_conversation_topic(ConversationalPartner, Topic)) :-
+   ConversationalPartner \= $addressee.
+
+strategy(add_conversation_topic(Person, Topic),
+	 assert(/pending_conversation_topics/Person/ask_about($me,
+							      Person,
+							      Topic))) :-
+   var(Topic) -> Topic = Person ; true.
+
+strategy(end_game(_,_), end_game(null)).

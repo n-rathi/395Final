@@ -124,6 +124,7 @@ stock_phrase(command($speaker, $addressee, order_drink(Drink))) -->
    {member(Drink, [margarita, julep])},
    [please].
 
+
 %
 % Increments produced by the discourse generator
 %

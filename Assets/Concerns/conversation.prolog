@@ -53,21 +53,7 @@ partner_still_speaking_to_me(Conversation) :-
    C/partner/ $me,
    C/concerns/_.
 
-% The conversation was just started up.
-on_enter_state(start, conversation, C) :-
-   C/initial_history/Event,
-   normalize_dialog_act(Event, Normalized),
-   ( Event = greet($me, _) ->
-       assert(C/greeted)
-       ;
-       conversation_handler_task(C, respond_to_dialog_act(Normalized)) ).
 
-% They just walked away from us!
-on_event(exit_conversational_space(Partner),
-	 conversation,
-	 C,
-	 kill_concern(C)) :-
-   C/partner/Partner.
 
 % They just died :(
 on_event(die(Partner),

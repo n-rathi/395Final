@@ -9,7 +9,7 @@ strategy(respond_to_dialog_act(command(Requestor, $me, Task)),
    request_status(Requestor, Task, RequestStatus).
 
 request_status(_Requestor, order_drink(Drink), drink_order) :-
-	member(Drink, [margarita]),
+	member(Drink, [margarita, julep]),
 	!.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -40,6 +40,8 @@ dialog_task(tell_about(_,_,_)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% FOLLOWING DRINK ORDER COMMAND
+
+trace_task($kavi, _).
 
 strategy(follow_command(_, _, drink_order),
 	 make_drink(margarita)).

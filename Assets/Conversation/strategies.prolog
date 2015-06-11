@@ -1,9 +1,5 @@
 :- external explanation/2.
 
-before(goto(_),
-       excuse_self($me, Partner)) :-
-   in_conversation_with(Partner).
-
 conversation_idle_task(Partner, pending_conversation) :-
    /pending_conversation_topics/Partner/_.
 

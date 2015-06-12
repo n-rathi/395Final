@@ -133,9 +133,10 @@ strategy(follow_command(_, order_drink(Drink), drink_order),
 
 strategy(make_drink(Drink),
 	begin(
-	say_string("Coming right up."),
+	begin(say_string("Coming right up."),
 	goto($refrigerator),
-	say_string("getting the ingredients..."),
+	say_string("getting the ingredients...")),
+	list_ingredients(Drink),
 	sleep(2),
 	goto($'kitchen table'),
 	say_string(String)

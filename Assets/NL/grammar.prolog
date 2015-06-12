@@ -179,19 +179,23 @@ add_conversation_dispatch_clause(Structure) :-
 
 :- register_utterance_types.
 
-
 %% Ordering a drink
 stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
    [make, me, a, Drink],
-   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b-52, brandy_alexander, bloody_mary, black_russian])}.
+   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian])}.
 
 %% Asking about ingredients
 stock_phrase(command($speaker, $kavi, query_ingredients(Drink))) -->
    [what, is, in, a, Drink],
-   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b-52, brandy_alexander, bloody_mary, black_russian])},
+   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian])},
    ['?'].
 
 %% Asking drink cost
 stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
    [how, much, is, a, Drink],
-   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b-52, brandy_alexander, bloody_mary, black_russian])}.
+   {member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian])}.
+
+
+%% Asking about the menu
+stock_phrase(command($speaker, $kavi, query_menu)) -->
+   [what, drinks, do, you, have, '?'].

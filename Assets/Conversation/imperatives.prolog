@@ -20,6 +20,10 @@ request_status(_Requestor, query_cost(Drink), cost_query) :-
 	drink(Drink,_,_),
 	!.	
 
+request_status(_Requestor, query_menu, menu_query) :-
+	true,
+	!.	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 request_status(_Requestor, Task, immoral) :-
@@ -109,6 +113,7 @@ strategy(tell_cost(Drink),
 	(drink(Drink, Cost, _),
 	word_list(String, [a, Drink, costs, Cost, dollars])).
 
+
 %%% Listing a drink's ingredients
 strategy(follow_command(_, query_ingredients(Drink), ingredient_query),
 	 list_ingredients(Drink)).
@@ -116,9 +121,11 @@ strategy(follow_command(_, query_ingredients(Drink), ingredient_query),
 strategy(list_ingredients(Drink),
 	say_string(String)
 	) :- 
-	drink(Drink, _, Ingredients),
-	append([the, Drink, contains, ':'], Ingredients, List),
+	drink(Drink, _, I),
+	insert_commas(I, Ingredients),
+	append([the, Drink, has, ':'], Ingredients, List),
 	word_list(String, List).
+
 
 %%% Fulfilling drink order
 strategy(follow_command(_, order_drink(Drink), drink_order),
@@ -129,9 +136,24 @@ strategy(make_drink(Drink),
 	say_string("Coming right up."),
 	goto($refrigerator),
 	say_string("getting the ingredients..."),
-	sleep(1),
+	sleep(2),
 	goto($'kitchen table'),
 	say_string(String)
 	)) :-
 	word_list(String, [enjoy, your, Drink]).
 
+
+%%% Listing menu items
+strategy(follow_command(_, _, menu_query),
+	 list_menu).
+
+strategy(list_menu,
+	say_string(String)) :-
+	findall(Drink, drink(Drink,_,_), L),
+	insert_commas(L, L2),
+	word_list(String, L2).
+
+
+insert_commas([],[]).
+insert_commas([H|T],[H,', '|TC]):-
+   insert_commas(T,TC).

@@ -1,6 +1,10 @@
-# About
-
+# Group
 Neha Rathi, Henry Spindell, Taylor Zheng
+
+*We want to add that technically Kevin Broh-Kahn joined our group via one email, but did not contribute anything or even make an effort to show up, aside from being at one of our meetings (of which there were 4 or 5) for all of 20 minutes. He also didn't communicate his availability or lack thereof through our email thread, or show any interest in being involved in the project at all.
+
+
+# About
 
 For this project, we decided to turn Kavi into a bartender. The player may approach Kavi and ask him things you would usually ask a bartender, such as:
 <ul>

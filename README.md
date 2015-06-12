@@ -10,7 +10,7 @@ For this project, we decided to turn Kavi into a bartender. The player may appro
 <li>Ask how much a drink costs</li>
 </ul>
 
-To test out the game, we suggest a sequence like the following (the first is necessary for the rest to work):
+To test out the game, we suggest a sequence like the following (the first is necessary for the rest to work):<br/>
 \>go to Kavi<br/>
 \>what can you make?<br/>
 \>what's in a seabreeze?<br/>

@@ -179,20 +179,43 @@ add_conversation_dispatch_clause(Structure) :-
 
 :- register_utterance_types.
 
-
 %% Drink list
-drink_list(Drink) :- member(Drink, [margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian,
+drink_list(Drink) :- member(Drink, [beer, margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian,
                 cuba_libre, fuzzy_navel, grasshopper, kamikaze, martini, seabreeze]).
 
 %% Ordering a drink
 stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
-   [make, me, a, Drink], {drink_list(Drink)}.
+   [make, me, a, Drink], 
+   {drink_list(Drink)},
+   [please].
+
+stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
+   [can, 'I', have, a, Drink],
+   {drink_list(Drink)},
+   [please, '?'].   
+
+stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
+   ['I', will, have, a, Drink],
+   {drink_list(Drink)},
+   [please].
+
+stock_phrase(command($speaker, $kavi, order_drink(Drink))) -->
+   ['I', would, like, a, Drink],
+   {drink_list(Drink)},
+   [please].
+
 
 %% Asking about ingredients
 stock_phrase(command($speaker, $kavi, query_ingredients(Drink))) -->
    [what, is, in, a, Drink],
    {drink_list(Drink)},
    ['?'].
+
+stock_phrase(command($speaker, $kavi, query_ingredients(Drink))) -->
+   [what, does, a, Drink],
+   {drink_list(Drink)},
+   [have, '?'].
+
 
 %% Asking drink cost
 stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
@@ -205,10 +228,22 @@ stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
    {drink_list(Drink)}, 
    ['?'].
 
+stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
+   [how, much, for, a, Drink],
+   {drink_list(Drink)}, 
+   ['?'].
+
 
 %% Asking about the menu
 stock_phrase(command($speaker, $kavi, query_menu)) -->
+   [what, can, you, make, '?'].
+
+stock_phrase(command($speaker, $kavi, query_menu)) -->
    [what, drinks, do, you, have, '?'].
 
-:- register_lexical_items([margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian,
-                cuba_libre, fuzzy_navel, grasshopper, kamikaze, martini, seabreeze]).
+stock_phrase(command($speaker, $kavi, query_menu)) -->
+   [what, drinks, do, you, serve, '?'].
+
+
+:- register_lexical_items([beer, margarita, julep, tequila_sunrise,  alabama_slammer, amaretto_sour, b_52, brandy_alexander, bloody_mary, black_russian,
+                cuba_libre, fuzzy_navel, grasshopper, kamikaze, martini, seabreeze, please, '?', drinks, serve]).

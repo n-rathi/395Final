@@ -139,18 +139,24 @@ strategy(follow_command(_, order_drink(Drink), drink_order),
 
 strategy(make_drink(Drink),
 	begin(
-	begin(say_string("Coming right up."),
-	sleep(1),
-	goto($refrigerator),
-	say_string("hmmm..."),
-	sleep(2),
-	list_ingredients(Drink)),
-	sleep(2),
-	say_string("*mix mix mix*"),
-	say_string("*mix mix mix*"),
-	sleep(2),
-	goto($'kitchen table'),
-	say_string(String)
+		say_string("Coming right up."),
+		begin(
+			sleep(1),
+			goto($refrigerator),
+			say_string("hmmm..."),
+			sleep(2),
+			list_ingredients(Drink),
+			sleep(2)
+		),
+		begin(
+			goto($'kitchen sink'),
+			say_string("*mix mix mix*"),
+			sleep(1),
+			say_string("*mix mix mix*"),
+			sleep(2)
+		),
+		goto($'kitchen table'),
+		say_string(String)
 	)) :-
 	word_list(String, [enjoy, your, Drink, '!']).
 
@@ -163,7 +169,7 @@ strategy(list_menu,
 	say_string(String)) :-
 	findall(Drink, drink(Drink,_,_), L),
 	insert_commas(L, L2),
-	append([we,have,':'], L2, L3),
+	append(['I',can,make,':'], L2, L3),
 	word_list(String, L3).
 
 

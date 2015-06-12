@@ -98,10 +98,8 @@ strategy(end_game(_,_), end_game(null)).
 
 
 
-%%% %%% %%% %%% %%% %%% %%% %%% %%% %%% %%% 
-%%% Our commands
+%%% %%% Bartender stuff %%% %%% %%% %%% 
 
-%%%trace_task($kavi, say_string(_)).
 
 %%% Telling how much a drink costs
 strategy(follow_command(_, query_cost(Drink), cost_query),
@@ -116,15 +114,23 @@ strategy(tell_cost(Drink),
 
 %%% Listing a drink's ingredients
 strategy(follow_command(_, query_ingredients(Drink), ingredient_query),
-	 list_ingredients(Drink)).
+	 describe_drink(Drink)).
 
-strategy(list_ingredients(Drink),
+strategy(describe_drink(Drink),
 	say_string(String)
 	) :- 
 	drink(Drink, _, I),
 	insert_commas(I, Ingredients),
 	append([the, Drink, has, ':'], Ingredients, List),
 	word_list(String, List).
+
+
+strategy(list_ingredients(Drink),
+	say_string(String)
+	) :- 
+	drink(Drink, _, I),
+	insert_commas(I, Ingredients),
+	word_list(String, Ingredients).
 
 
 %%% Fulfilling drink order
@@ -134,14 +140,19 @@ strategy(follow_command(_, order_drink(Drink), drink_order),
 strategy(make_drink(Drink),
 	begin(
 	begin(say_string("Coming right up."),
+	sleep(1),
 	goto($refrigerator),
-	say_string("getting the ingredients...")),
-	list_ingredients(Drink),
+	say_string("hmmm..."),
+	sleep(2),
+	list_ingredients(Drink)),
+	sleep(2),
+	say_string("*mix mix mix*"),
+	say_string("*mix mix mix*"),
 	sleep(2),
 	goto($'kitchen table'),
 	say_string(String)
 	)) :-
-	word_list(String, [enjoy, your, Drink]).
+	word_list(String, [enjoy, your, Drink, '!']).
 
 
 %%% Listing menu items
@@ -152,7 +163,8 @@ strategy(list_menu,
 	say_string(String)) :-
 	findall(Drink, drink(Drink,_,_), L),
 	insert_commas(L, L2),
-	word_list(String, L2).
+	append([we,have,':'], L2, L3),
+	word_list(String, L3).
 
 
 insert_commas([],[]).

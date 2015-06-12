@@ -200,6 +200,11 @@ stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
    {drink_list(Drink)},
    ['?'].
 
+stock_phrase(command($speaker, $kavi, query_cost(Drink))) -->
+   [how, much, does, a, Drink, cost],
+   {drink_list(Drink)}, 
+   ['?'].
+
 
 %% Asking about the menu
 stock_phrase(command($speaker, $kavi, query_menu)) -->
